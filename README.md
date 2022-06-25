@@ -30,3 +30,4 @@ The following are in order of priority:
 * Error logs not writing
 * Seems to be a bug if start a time entry with 'time'
 * Add functionality to sum up hours against documents on certain projects
+* Allow for different project / job number structures (via setting in settings.txt)
