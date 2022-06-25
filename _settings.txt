@@ -1,0 +1,7 @@
+! Example file only. When you run the program it will prompt you to make this file.
+
+user_agent = test@test.com
+api_key = 12345
+workspace_id = 12345
+excel_path = C:\timesheet.xlsx
+tracking =  [['Axxxxxxx - machine build', 70, '11/06/21']]
