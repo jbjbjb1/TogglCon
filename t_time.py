@@ -44,6 +44,7 @@ class TimeSheetLoader():
                 f.write('api_key = ' + str(self.api_key) +  '\n')
                 f.write('workspace_id = ' + str(self.workspace_id) +  '\n')
                 f.write('excel_path = ' + str(self.excel_path))
+                f.write('tracking = []')
 
     def get_workspace_id(self):
         # Gets list of workspaces user has from api

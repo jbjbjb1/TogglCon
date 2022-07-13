@@ -24,10 +24,13 @@ This app also has a feature to track hours spent on projects. In the _settings.t
 # Updates to app
 * TBA
 
-# Improvements
+# Improvements needed
 The following are in order of priority:
 * If there is an error, don't crash, leave error on screen
 * Error logs not writing
 * Seems to be a bug if start a time entry with 'time'
 * Add functionality to sum up hours against documents on certain projects
 * Allow for different project / job number structures (via setting in settings.txt)
+
+# Improvements completed
+* 13/7/22 - tracking was missing off the auto created settings file causing the program to crash
