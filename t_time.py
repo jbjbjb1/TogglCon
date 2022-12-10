@@ -198,7 +198,6 @@ class TimeSheetLoader():
             else:
                 W = x['temp_desc'][0].split(')')[0]
                 W = W.split('(')[1]
-                W = W.strip()
                 W = W.split(' ')[0]
                 x['W'] = W
             
@@ -252,8 +251,8 @@ class TimeSheetLoader():
 
     def display_data(self, r_dat):
         # Print header
-        print('\n{0:12} {1:12} {2:15} {3:15} {4:15} {5:70} {6:10}'.format('Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours'))
+        print('\n{0:12} {1:12} {2:15} {3:14} {4:14} {5:70} {6:10}'.format('Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours'))
         # Print lines of data
         for i in r_dat['data']:
-            print('{0:12} {1:12} {2:15} {3:15} {4:15} {5:70} {6:10}'.format(self.format_date_text(r_dat['date']), i['branch'], 'TBA', i['project_short'], i['W'], i['output_desc'], str(i['time_rounded'])))
+            print('{0:12} {1:12} {2:15} {3:14} {4:14} {5:70} {6:10}'.format(self.format_date_text(r_dat['date']), i['branch'], 'TBA', i['project_short'], i['W'], i['output_desc'], str(i['time_rounded'])))
         print('')
