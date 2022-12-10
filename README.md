@@ -1,7 +1,14 @@
 # Readme
-This app takes timesheet information from Toggl.com and inputs it into an Excel timesheet file. The objective is to automate the timesheet entry process.
+This app takes timesheet information from Toggl.com, restructures it based on the criteria described below, presents a summary of the information in a console window, then offers to auto-type using the keyboard into an Excel file in Office Online.
 
-This app also has a feature to track hours spent on projects. In the _settings.txt file is an example of tracking a project. It is done in the format `tracking =  [['Axxxxxxx - machine build', 70, '11/06/21']]`. There will then be an extra menu option in togglcon to view status of jobs. It will then gather up the sum of hours spent on the job over the last 12 months and report it in the format: "Pxxxxxxx - machine build; 60% hrs spent & 3d remaining (35/59 hours)."
+This app also has a feature to track hours spent on projects. It is done by adding to settings.txt in the format `tracking =  [['Pxxxxxxx - machine build', 70, '11/06/21']]` where Pxxxxxxx is the project number, 70 is the hours allowed, and the date is the due date. There is a menu option in togglcon to view status of jobs. It will then gather up the sum of hours spent on the job over the last 12 months and report it in the format: "Pxxxxxxx - machine build; 60% hrs spent & 3d remaining (35/59 hours)."
+
+The method that information needs to be put into Toggl.com is:
+* A client must be defined for each project,
+* The description field must start with the job number in brackets unless it is NR; "(Wxxxxxxx) Description"
+
+The output from Togglcon is to:
+* Split out the "(Wxxxxxxx)" number from each line entry so it is shown in its own column
 
 # Getting Started
 1. Installation process
