@@ -1,11 +1,11 @@
 # Readme
 This app takes timesheet information from Toggl.com, restructures it based on the criteria described below, presents a summary of the information in a console window, then offers to auto-type using the keyboard into an Excel file in Office Online.
 
-This app also has a feature to track hours spent on projects. It is done by adding to settings.txt in the format `tracking =  [['Pxxxxxxx - machine build', 70, '11/06/21']]` where Pxxxxxxx is the project number, 70 is the hours allowed, and the date is the due date. There is a menu option in togglcon to view status of jobs. It will then gather up the sum of hours spent on the job over the last 12 months and report it in the format: "Pxxxxxxx - machine build; 60% hrs spent & 3d remaining (35/59 hours)."
-
 The method that information needs to be put into Toggl.com is:
 * A client must be defined for each project,
 * The description field must start with the job number in brackets unless it is NR; "(Wxxxxxxx) Description"
+* (Future feature) If the time is for quoting, a tag "Quoting" must be placed on the entry
+* (Future feature) If the time is chargeable, a tag "Charged" must be placed on the entry
 
 The output from Togglcon is to:
 * Split out the "(Wxxxxxxx)" number from each line entry so it is shown in its own column
@@ -17,7 +17,7 @@ The output from Togglcon is to:
 1. Sign up for Toggl.com
 2. Installation process
         a) Install Python 3.9 installed on your computer.
-        b) Install Visual Studio Code
+        b) Install Visual Studio Code, go to the folder of the code, View -> Command Pallet and choose Python
         c) `pip install pipenv`
         d) There is an exisiting Pipfile for a pipenv. Use that pipenv to run the program with `pipenv install`.
         e) From now on you only need to enter `pipenv shell` to enter the shell or use VS Code environments
@@ -32,8 +32,11 @@ The output from Togglcon is to:
 4. Auto type into Excel
         When the app prompts you, it will give you a few seconds to click in the Office Online Excel sheet before the autotyping starts.
 
+
 # Improvements needed
 The following are in order of priority:
+* Get autocomplete feature working
+* Get tags working for charge type (quoting/chargeable)
 * If there is an error, don't crash, leave error on screen
 * Error logs not writing
 * Seems to be a bug if start a time entry with 'time'
