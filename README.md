@@ -4,7 +4,7 @@ This app takes timesheet information from Toggl.com, restructures it based on th
 The method that information needs to be put into Toggl.com is:
 * A client must be defined for each project,
 * Each project shall be in the format: 'Pxxxxxxx/Wxxxxxxx - Project title/Job title'
-* The following tags can be used: ExcessHrs, MiscAdmin, Quoting
+* The following tags can be used: ExcessHrs, MiscAdmin, Quoting, Chargeable
 
 The output from Togglcon is to:
 * Split out the "(Wxxxxxxx)" number from each line entry so it is shown in its own column
