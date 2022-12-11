@@ -154,22 +154,33 @@ class TimeSheetLoader():
                 raise
         # Create base dataframe with above for timesheet
         for i in projects_list:
-            if i['project'] is None:
-                print('\n! Error: missing project for item in Toggl. Press any button to exit program.')
+            if i['project'] == None:
+                print('\n! Error: missing project for item in Toggl. Press any button to reset program.')
                 input()
-                exit()
-            short_project = i['project'].split()[0]     # project_short splits string to get job/noi number only    
-            r_dat2['data'].append({'project': i['project'], 'project_short': short_project})                       
+                break
+            elif i['project'] == 'NR':
+                r_dat2['data'].append({'project': i['project'], 'project_short': '', 'W': '', 'charge_type': 'NR'}) 
+            else:
+                short_string = i['project'].split()[0]     # project_short splits string  
+                short_project = short_string.split('/')[0].strip()
+                short_job = short_string.split('/')[1].strip()
+                r_dat2['data'].append({'project': i['project'], 'project_short': short_project, 'W': short_job, 'charge_type': ''})                       
 
         # Add formatted data
         b_times = []
         for x in r_dat2['data']:
-            # Add client
             x['client'] = ''
+            x['charge_type'] = ''
             for i in r_dat['data']:
                 if x['project'] == i['project']:
+                    # Add client
                     if i['client'] != x['client']:
                         x['client'] = i['client']
+                    # Add charge type tag
+                    # TODO this is not correct place as project may have multiple tags that need to be split out
+                    if x['charge_type'] == '':
+                        x['charge_type'] = i['tags'][0]
+
 
             # Add the times (milliseconds) to each of the unique projects.
             a_times = 0
@@ -191,24 +202,7 @@ class TimeSheetLoader():
                     else:
                         idx = x['temp_desc'].index(i['description'])
                         x['temp_desc_time'][idx] += i['dur']
-            
-            # Extract the W number from the temp_description
-            if x['client'] == 'CFS':
-                x['W'] = ''
-            else:
-                W = x['temp_desc'][0].split(')')[0]
-                W = W.split('(')[1]
-                W = W.split(' ')[0]
-                x['W'] = W
-            
-            # Remove W number and client from temp_description
-            if x['client'] == 'CFS':
-                pass
-            else:
-                for idx in range(len(x['temp_desc'])):
-                    updated_desc = x['temp_desc'][idx].split(')')[1].strip()    # and remove white spaces
-                    x['temp_desc'][idx] = updated_desc
-        
+                                
             # Write complete description string with time to x['description'].
             x['description'] = []
             for idx in range(len(x['temp_desc'])):
@@ -222,18 +216,21 @@ class TimeSheetLoader():
                         x['description'].append(x['temp_desc'][idx] + ' (' + str(self.round_half_hr(x['temp_desc_time'][idx])) + 'hr)')
 
             # Get output description string
-            if x['client'] == 'CFS':
+            if x['project'] == 'NR':
                 description = ', '.join(x['description'])
             else:
                 description = '(' + x['client'] + ') ' + ', '.join(x['description'])
             x['output_desc'] = description
 
             # Get branch number
-            if x['project_short'] == 'NR':
+            if x['project'] == 'NR':
                 branch = '575'
             else:
                 branch = x['project_short'].split('P')[1][:3]
             x['branch'] = branch
+
+            # Add the tag to charge type
+
                                
         # Format the hours as required and save to new variable (if there are any entries)
         if len(r_dat2['data']) != 0:
@@ -254,5 +251,5 @@ class TimeSheetLoader():
         print('\n{0:12} {1:12} {2:15} {3:14} {4:14} {5:70} {6:10}'.format('Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours'))
         # Print lines of data
         for i in r_dat['data']:
-            print('{0:12} {1:12} {2:15} {3:14} {4:14} {5:70} {6:10}'.format(self.format_date_text(r_dat['date']), i['branch'], 'TBA', i['project_short'], i['W'], i['output_desc'], str(i['time_rounded'])))
+            print('{0:12} {1:12} {2:15} {3:14} {4:14} {5:70} {6:10}'.format(self.format_date_text(r_dat['date']), i['branch'], i['charge_type'], i['project_short'], i['W'], i['output_desc'], str(i['time_rounded'])))
         print('')

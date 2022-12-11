@@ -3,15 +3,16 @@ This app takes timesheet information from Toggl.com, restructures it based on th
 
 The method that information needs to be put into Toggl.com is:
 * A client must be defined for each project,
-* The description field must start with the job number in brackets unless it is NR; "(Wxxxxxxx) Description"
-* (Future feature) If the time is for quoting, a tag "Quoting" must be placed on the entry
-* (Future feature) If the time is chargeable, a tag "Charged" must be placed on the entry
+* Each project shall be in the format: 'Pxxxxxxx/Wxxxxxxx - Project title/Job title'
+* The following tags can be used: ExcessHrs, MiscAdmin, Quoting
 
 The output from Togglcon is to:
 * Split out the "(Wxxxxxxx)" number from each line entry so it is shown in its own column
 * All times in the output presentation view will be rounded to the nearest 0.5 hr.
 * In the description field, add the client name in brackets at the start, e.g. "(Client) Description"
 * In the description field, if there are multiple entries for the same project/Wxxxxxxx, it will group them and the second entry onwards will have the duration in brackets, e.g. "(Client) Description, Description1 (1.0hr), Description2 (0.5hr)"
+
+Note: a current limitation is that there can only be one tag for a project/job combination on each day's timesheet.
 
 # How to run and use it
 1. Sign up for Toggl.com
@@ -35,6 +36,7 @@ The output from Togglcon is to:
 
 # Improvements needed
 The following are in order of priority:
+* Charge type tags from Toggl not fully functional, needs to split into multiple rows if different charge types
 * Get autocomplete feature working
 * Get tags working for charge type (quoting/chargeable)
 * If there is an error, don't crash, leave error on screen
