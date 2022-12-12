@@ -20,8 +20,7 @@ while True:
         date = datetime.strftime(datetime.now(), '%d/%m/%y')
         timesheet_data = a.summary_data(date)
         a.excelLoad(timesheet_data)
-        input('\nPress any key to exit...')
-        exit()
+        
     elif choice == 't':
         # Get today's timesheet
         date = datetime.strftime(datetime.now(), '%d/%m/%y')

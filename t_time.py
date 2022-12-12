@@ -248,6 +248,11 @@ class TimeSheetLoader():
         print('\nThis feature is not yet operational.')
         #TODO add this feature
 
+
+    def crossRef(self):
+        """Use the data in cross_ref.xlsx to cross reference the desired columns."""
+        pass
+
     
     def excelLoad(self, r_dat):
         """This feature loads the timesheet in a new Excel window."""
@@ -261,8 +266,13 @@ class TimeSheetLoader():
                 'Description': i['output_desc'], 
                 'Hours': str(i['time_rounded'])})
         self.times = pd.DataFrame(data)
-        self.times.to_excel("temp_output.xlsx")  # save to Excel
-        os.startfile("temp_output.xlsx")  # open file
+        try:
+            self.times.to_excel("temp_output.xlsx", index=False)  # save to Excel
+            os.startfile("temp_output.xlsx")  # open file
+            input('\nPress any key to exit...')
+            exit()
+        except PermissionError:
+            print('ERROR Please close file and try again.')
 
 
     def display_data(self, r_dat):
