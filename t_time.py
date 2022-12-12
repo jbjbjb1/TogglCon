@@ -161,10 +161,15 @@ class TimeSheetLoader():
             elif i['project'] == 'NR':
                 r_dat2['data'].append({'project': i['project'], 'project_short': '', 'W': '', 'charge_type': 'NR'}) 
             else:
-                short_string = i['project'].split()[0]     # project_short splits string  
-                short_project = short_string.split('/')[0].strip()
-                short_job = short_string.split('/')[1].strip()
-                r_dat2['data'].append({'project': i['project'], 'project_short': short_project, 'W': short_job, 'charge_type': ''})                       
+                try:
+                    short_string = i['project'].split()[0]     # project_short splits string  
+                    short_project = short_string.split('/')[0].strip()
+                    short_job = short_string.split('/')[1].strip()
+                    r_dat2['data'].append({'project': i['project'], 'project_short': short_project, 'W': short_job, 'charge_type': ''})
+                except IndexError:
+                    print(f"ERROR There is an issue with how you have entered \"{i['project']}\". Try again...", end = '')
+                    input()
+                    break                       
 
         # Add formatted data
         b_times = []
