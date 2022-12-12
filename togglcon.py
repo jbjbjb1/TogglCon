@@ -5,7 +5,7 @@ from time import sleep
 
 
 # Version and welcome message
-version = '3.0'
+version = '3.2'
 print(f'---> togglcon, version {version} <---')
 
 # Initiate class for timesheets

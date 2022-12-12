@@ -44,6 +44,7 @@ class TimeSheetLoader():
                 f.write('api_key = ' + str(self.api_key) +  '\n')
                 f.write('workspace_id = ' + str(self.workspace_id) +  '\n')
 
+
     def get_workspace_id(self):
         # Gets list of workspaces user has from api
         r = requests.get('https://api.track.toggl.com/api/v8/workspaces', auth=(self.api_key, 'api_token'))
@@ -72,17 +73,21 @@ class TimeSheetLoader():
         
         return r.json()  
 
+
     # Define functions for interpreting the data
     def round_half_hr(self, time_ms):
         """Toggl api returns milliseconds, round to half hours"""
         time = time_ms/(1000*60*60)
         return round(time * 2) / 2
 
+
     def format_date_text(self, date):
         return datetime.strptime(date, '%d/%m/%y').strftime('%d/%m/%y')
 
+
     def format_date_date(self, date):
         return datetime.strptime(date, '%d/%m/%y').date()
+
 
     def hours_function(self, r_dat):
         """Check there are no projects rounded to 0 hrs."""
@@ -233,9 +238,6 @@ class TimeSheetLoader():
             else:
                 branch = x['project_short'].split('P')[1][:3]
             x['branch'] = branch
-
-            # Add the tag to charge type
-
                                
         # Format the hours as required and save to new variable (if there are any entries)
         if len(r_dat2['data']) != 0:
@@ -250,6 +252,7 @@ class TimeSheetLoader():
 
         print('\nThis feature is not yet operational.')
         #TODO add this feature
+
 
     def display_data(self, r_dat):
         # Print header
