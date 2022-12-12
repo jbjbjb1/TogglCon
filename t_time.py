@@ -122,9 +122,9 @@ class TimeSheetLoader():
         timesheet_data = self.summary_data(date)
         self.display_data(timesheet_data)
         if len(timesheet_data['data']) != 0:    # only prompt if data to enter
-            user_input = input("Autocomplete keystrokes in Excel Online (enter) yes, (n) no? ")
+            user_input = input("Load in Excel (enter) yes, (n) no? ")
             if user_input == '':
-                self.autocomplete(timesheet_data)
+                self.excelLoad(timesheet_data)
             if user_input == 'n':
                 pass
         return timesheet_data
