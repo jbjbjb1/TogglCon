@@ -10,6 +10,8 @@ pylint = "*"
 requests = "*"
 pyinstaller = "*"
 openpyxl = "*"
+numpy = "*"
+pandas = "*"
 
 [requires]
 python_version = "3"

@@ -14,12 +14,12 @@ a = t_time.TimeSheetLoader()
 # Terminal line interation with user to control program
 choice = ''
 while True:   
-    choice = input('\nFast-fill (enter), view today (t), yesterday (y), specific (DD/MM/YY), help (h) or exit (e): ')    
+    choice = input('\nFast-load (enter), view today (t), yesterday (y), specific (DD/MM/YY), help (h) or exit (e): ')    
     if choice == '':
-        # Get today's timesheet and enter it
+        # Get today's timesheet and open it in Excel
         date = datetime.strftime(datetime.now(), '%d/%m/%y')
         timesheet_data = a.summary_data(date)
-        a.autocomplete(timesheet_data)
+        a.excelLoad(timesheet_data)
         input('\nPress any key to exit...')
         exit()
     elif choice == 't':

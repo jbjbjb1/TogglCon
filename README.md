@@ -12,6 +12,9 @@ The output from Togglcon is to:
 * In the description field, add the client name in brackets at the start, e.g. "(Client) Description"
 * In the description field, if there are multiple entries for the same project/Wxxxxxxx, it will group them and the second entry onwards will have the duration in brackets, e.g. "(Client) Description, Description1 (1.0hr), Description2 (0.5hr)"
 
+Errors that will be advised are:
+* If the format 'Pxxxxxxx/Wxxxxxxx - Project title/Job title' in Toggl is not followed
+
 Note: a current limitation is that there can only be one tag for a project/job combination on each day's timesheet.
 
 # How to run and use it
@@ -36,6 +39,7 @@ Note: a current limitation is that there can only be one tag for a project/job c
 
 # Improvements needed
 The following are in order of priority:
+* Map branch and charge type as required
 * Charge type tags from Toggl not fully functional, needs to split into multiple rows if different charge types
 * Get autocomplete feature working
 * Get tags working for charge type (quoting/chargeable)

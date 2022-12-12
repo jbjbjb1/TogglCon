@@ -2,6 +2,8 @@ import json
 import logging
 import os.path
 from datetime import datetime, timedelta
+import numpy as np
+import pandas as pd
 
 import requests
 from openpyxl import Workbook, load_workbook
@@ -13,23 +15,16 @@ class TimeSheetLoader():
 
     def __init__(self):
         # Declare initial user vairables
-        self.user_agent, self.api_key, self.workspace_id, self.excel_path = ('', '', '', '')
+        self.user_agent, self.api_key, self.workspace_id = ('', '', '')
         # Load user details from settings file
         try:
             with open('settings.txt') as f:
                 for line in f:
                     fields = line.strip().split()
                     # for security only input these pre-defined variables
-                    if fields[0] == 'user_agent' or 'api_key' or 'workspace_id' or 'excel_path' or 'tracking':
+                    if fields[0] == 'user_agent' or 'api_key' or 'workspace_id':
                         # Handling the path on the computer needs special help
-                        if fields[0] == 'excel_path':
-                            path = r'{}'.format((' ').join(fields[2:]))
-                            exec("self.%s = path" % (fields[0]))
-                        elif fields[0] == 'tracking':
-                            projects_string = (' ').join(fields[2:])
-                            exec('self.%s = %s' % (fields[0], projects_string))
-                        else:
-                            exec('self.%s = "%s"' % (fields[0], fields[2]))
+                        exec('self.%s = "%s"' % (fields[0], fields[2]))
         # If it doesn't exist, prompt the user for the settings
         except FileNotFoundError:
             print('Let\'s get you setup!')
@@ -252,6 +247,22 @@ class TimeSheetLoader():
 
         print('\nThis feature is not yet operational.')
         #TODO add this feature
+
+    
+    def excelLoad(self, r_dat):
+        """This feature loads the timesheet in a new Excel window."""
+        data = []
+        for i in r_dat['data']:
+            data.append({'Date': self.format_date_text(r_dat['date']), 
+                'Branch': i['branch'], 
+                'Charge Type': i['charge_type'], 
+                'Project No': i['project_short'], 
+                'Job No': i['W'], 
+                'Description': i['output_desc'], 
+                'Hours': str(i['time_rounded'])})
+        self.times = pd.DataFrame(data)
+        self.times.to_excel("temp_output.xlsx")  # save to Excel
+        os.startfile("temp_output.xlsx")  # open file
 
 
     def display_data(self, r_dat):
