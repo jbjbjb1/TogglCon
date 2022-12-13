@@ -16,7 +16,8 @@ The output from Togglcon is to:
 
 Errors that will be advised are:
 * If the format 'Pxxxxxxx/Wxxxxxxx - Project title/Job title' in Toggl is not followed
-* If trying to load the Excel file and it is already open.
+* If trying to load the Excel file and it is already open
+* If you don't have a cross_ref.xlsx to merge with (will still display data as-is in Excel)
 
 Note: a current limitation is that there can only be one tag for a project/job combination on each day's timesheet.
 
