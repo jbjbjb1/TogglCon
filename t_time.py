@@ -15,14 +15,14 @@ class TimeSheetLoader():
 
     def __init__(self):
         # Declare initial user vairables
-        self.user_agent, self.api_key, self.workspace_id = ('', '', '')
+        self.user_agent, self.api_key, self.workspace_id, self.website = ('', '', '', '')
         # Load user details from settings file
         try:
             with open('settings.txt') as f:
                 for line in f:
                     fields = line.strip().split()
                     # for security only input these pre-defined variables
-                    if fields[0] == 'user_agent' or 'api_key' or 'workspace_id':
+                    if fields[0] == 'user_agent' or 'api_key' or 'workspace_id' or 'website':
                         # Handling the path on the computer needs special help
                         exec('self.%s = "%s"' % (fields[0], fields[2]))
         # If it doesn't exist, prompt the user for the settings
@@ -252,11 +252,6 @@ class TimeSheetLoader():
         print('\nThis feature is not yet operational.')
         #TODO add this feature
 
-
-    def crossRef(self):
-        """Use the data in cross_ref.xlsx to cross reference the desired columns."""
-        pass
-
     
     def create_df(self, r_dat2):
         """Create Pandas dataframe with data."""
@@ -269,13 +264,38 @@ class TimeSheetLoader():
                 'Job No': i['W'], 
                 'Description': i['output_desc'], 
                 'Hours': str(i['time_rounded'])})
-        return pd.DataFrame(data)
-    
+        dataframe = pd.DataFrame(data)
+        dataframe['Branch'] = pd.to_numeric(dataframe['Branch'])
+        return dataframe
+
+
+    def merge_cross_ref(self):
+        """Merge cross_ref.xlsx into the datframe."""
+        try:
+            # Load merge data
+            merge_data_branch = pd.read_excel('cross_ref.xlsx', 'Branch', names=['Branch', 'Full'])
+            merge_data_charge = pd.read_excel('cross_ref.xlsx', 'ChargeType', names=['Charge Type', 'Full'])
+            # Merge branch code
+            times_branch = self.times.merge(merge_data_branch, how='left', on='Branch')
+            times_branch.drop(columns=['Branch'], inplace=True)
+            times_branch.rename(columns={"Full": "Branch"}, inplace=True)
+            # Merge charge code
+            times_charge = times_branch.merge(merge_data_charge, how='left', on='Charge Type')
+            times_charge.drop(columns=['Charge Type'], inplace=True)
+            times_charge.rename(columns={"Full": "Charge Type"}, inplace=True)
+            # Then re-order
+            times_updated = times_charge[['Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours']]
+        except FileExistsError:
+            print('File cross_ref.xlsx does not exist.')
+
+        return times_updated
+
 
     def excelLoad(self):
         """Load the timesheet in a new Excel window."""
+        self.times_updated = self.merge_cross_ref()
         try:
-            self.times.to_excel("temp_output.xlsx", index=False)  # save to Excel
+            self.times_updated.to_excel("temp_output.xlsx", index=False)  # save to Excel
             os.startfile("temp_output.xlsx")  # open file
         except PermissionError:
             print('ERROR Please close file and try again.')

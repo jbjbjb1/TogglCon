@@ -1,16 +1,18 @@
 # Readme
-This app takes timesheet information from Toggl.com, restructures it based on the criteria described below, presents a summary of the information in a console window, then offers to auto-type using the keyboard into an Excel file in Office Online.
+This app takes timesheet information from Toggl.com, restructures it based on the criteria described below, presents a summary of the information in a console window, then offers to load in an Excel file with easy copy/paste ability.
 
 The method that information needs to be put into Toggl.com is:
 * A client must be defined for each project,
 * Each project shall be in the format: 'Pxxxxxxx/Wxxxxxxx - Project title/Job title'
-* The following tags can be used: ExcessHrs, MiscAdmin, Quoting, Chargeable
+* Tags of your choise must be used against each time entry
+* If you want to cross reference the tags to a longer string (only for Branch, ChargeType), then you need to fill out cross_ref.xlsx like the sample shown
 
 The output from Togglcon is to:
 * Split out the "(Wxxxxxxx)" number from each line entry so it is shown in its own column
 * All times in the output presentation view will be rounded to the nearest 0.5 hr.
 * In the description field, add the client name in brackets at the start, e.g. "(Client) Description"
 * In the description field, if there are multiple entries for the same project/Wxxxxxxx, it will group them and the second entry onwards will have the duration in brackets, e.g. "(Client) Description, Description1 (1.0hr), Description2 (0.5hr)"
+* If you want to cross reference the tags to a longer string (only for Branch, ChargeType) before opening in Excel
 
 Errors that will be advised are:
 * If the format 'Pxxxxxxx/Wxxxxxxx - Project title/Job title' in Toggl is not followed
