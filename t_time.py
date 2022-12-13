@@ -120,11 +120,11 @@ class TimeSheetLoader():
     def get_timesheet(self, date):
         """This is the master function to run to get a day's timesheet entry."""
         timesheet_data = self.summary_data(date)
-        self.display_data(timesheet_data)
+        self.display_data()
         if len(timesheet_data['data']) != 0:    # only prompt if data to enter
             user_input = input("Load in Excel (enter) yes, (n) no? ")
             if user_input == '':
-                self.excelLoad(timesheet_data)
+                self.excelLoad()
             if user_input == 'n':
                 pass
         return timesheet_data
@@ -239,10 +239,14 @@ class TimeSheetLoader():
             self.hours_function(r_dat2)  # proceed if entries
         else:
             print('No timesheet entries.')
-        return r_dat2 
+        
+        # Save as Pandas dataframe
+        self.times = self.create_df(r_dat2)
+        
+        return r_dat2
 
 
-    def autocomplete(self, r_dat):
+    def autocomplete(self):
         """Autocompletes Excel file by controlling the keyboard to enter text."""
 
         print('\nThis feature is not yet operational.')
@@ -254,31 +258,31 @@ class TimeSheetLoader():
         pass
 
     
-    def excelLoad(self, r_dat):
-        """This feature loads the timesheet in a new Excel window."""
+    def create_df(self, r_dat2):
+        """Create Pandas dataframe with data."""
         data = []
-        for i in r_dat['data']:
-            data.append({'Date': self.format_date_text(r_dat['date']), 
+        for i in r_dat2['data']:
+            data.append({'Date': self.format_date_text(r_dat2['date']), 
                 'Branch': i['branch'], 
                 'Charge Type': i['charge_type'], 
                 'Project No': i['project_short'], 
                 'Job No': i['W'], 
                 'Description': i['output_desc'], 
                 'Hours': str(i['time_rounded'])})
-        self.times = pd.DataFrame(data)
+        return pd.DataFrame(data)
+    
+
+    def excelLoad(self):
+        """Load the timesheet in a new Excel window."""
         try:
             self.times.to_excel("temp_output.xlsx", index=False)  # save to Excel
             os.startfile("temp_output.xlsx")  # open file
-            input('\nPress any key to exit...')
-            exit()
         except PermissionError:
             print('ERROR Please close file and try again.')
 
 
-    def display_data(self, r_dat):
-        # Print header
-        print('\n{0:12} {1:12} {2:15} {3:14} {4:14} {5:70} {6:10}'.format('Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours'))
-        # Print lines of data
-        for i in r_dat['data']:
-            print('{0:12} {1:12} {2:15} {3:14} {4:14} {5:70} {6:10}'.format(self.format_date_text(r_dat['date']), i['branch'], i['charge_type'], i['project_short'], i['W'], i['output_desc'], str(i['time_rounded'])))
+    def display_data(self):
+        # Show from Pandas dataframe
+        print('')
+        print(self.times.to_string(index=False))
         print('')
