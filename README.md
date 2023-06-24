@@ -54,6 +54,7 @@ The following are in order of priority:
 
 # Improvements completed
 * 24/6/23 - updated from Pxxx-x... to PROxxx-x... & similar for WIP.
+* 24/6/23 - fixed issue of cross_ref.xlsx file always not importing first row
 * 13/7/22 - tracking was missing off the auto created settings file causing the program to crash
 
 # Interested to contribute?
