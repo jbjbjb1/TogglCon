@@ -8,10 +8,10 @@ The method that information needs to be put into Toggl.com is:
 * If you want to cross reference the tags to a longer string (only for Branch, ChargeType), then you need to fill out cross_ref.xlsx like the sample shown
 
 The output from Togglcon is to:
-* Split out the "(Wxxxxxxx)" number from each line entry so it is shown in its own column
+* Split out the "(WIPxxx-xxxx)" number from each line entry so it is shown in its own column
 * All times in the output presentation view will be rounded to the nearest 0.5 hr.
 * In the description field, add the client name in brackets at the start, e.g. "(Client) Description"
-* In the description field, if there are multiple entries for the same project/Wxxxxxxx, it will group them and the second entry onwards will have the duration in brackets, e.g. "(Client) Description, Description1 (1.0hr), Description2 (0.5hr)"
+* In the description field, if there are multiple entries for the same project/WIPxxx-xxxx, it will group them and the second entry onwards will have the duration in brackets, e.g. "(Client) Description, Description1 (1.0hr), Description2 (0.5hr)"
 * If you want to cross reference the tags to a longer string (only for Branch, ChargeType) before opening in Excel
 
 Errors that will be advised are:
@@ -53,6 +53,7 @@ The following are in order of priority:
 * Add functionality to sum up hours against documents on certain projects
 
 # Improvements completed
+* 24/6/23 - updated from Pxxx-x... to PROxxx-x... & similar for WIP.
 * 13/7/22 - tracking was missing off the auto created settings file causing the program to crash
 
 # Interested to contribute?

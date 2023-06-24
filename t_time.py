@@ -273,8 +273,8 @@ class TimeSheetLoader():
         """Merge cross_ref.xlsx into the datframe."""
         try:
             # Load merge data
-            merge_data_branch = pd.read_excel('cross_ref.xlsx', 'Branch', names=['Branch', 'Full'])
-            merge_data_charge = pd.read_excel('cross_ref.xlsx', 'ChargeType', names=['Charge Type', 'Full'])
+            merge_data_branch = pd.read_excel('cross_ref.xlsx', 'Branch', header=None, names=['Branch', 'Full'])
+            merge_data_charge = pd.read_excel('cross_ref.xlsx', 'ChargeType', header=None, names=['Charge Type', 'Full'])
             # Merge branch code
             times_branch = self.times.merge(merge_data_branch, how='left', on='Branch')
             times_branch.drop(columns=['Branch'], inplace=True)
