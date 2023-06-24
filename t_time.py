@@ -233,6 +233,13 @@ class TimeSheetLoader():
             else:
                 branch = x['project_short'].split('P')[1][:3]
             x['branch'] = branch
+
+            # Update format for Pxxx-x... to PROxxx-x... & similar for WIP
+            if x['project'] != 'NR':
+                x['project_short'] = 'PRO' + x['project_short'][1:4] + '-' + x['project_short'][4:8]
+                x['W'] = 'WIP' + x['W'][1:4] + '-' + x['W'][4:8]
+            
+            pass
                                
         # Format the hours as required and save to new variable (if there are any entries)
         if len(r_dat2['data']) != 0:
