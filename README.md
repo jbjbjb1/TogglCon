@@ -53,6 +53,7 @@ The following are in order of priority:
 * Add functionality to sum up hours against documents on certain projects
 
 # Improvements completed
+* 29/9/23 - removed project/job number ending digit limit of 4
 * 26/6/23 - updated to fix 'fast fill' working and gave preview of data, removed 'today' menu option
 * 24/6/23 - updated from Pxxx-x... to PROxxx-x... & similar for WIP.
 * 24/6/23 - fixed issue of cross_ref.xlsx file always not importing first row
