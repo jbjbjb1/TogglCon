@@ -47,7 +47,8 @@ The following are in order of priority:
 * Error logs not writing
 
 # Improvements completed
-* 22/1/24 - error handling created for common errors and added icon file.
+* 22/1/24 - (v3.6) changed method to send data straight to clipboard
+* 22/1/24 - (v3.5) error handling created for common errors and added icon file.
 * 29/9/23 - removed project/job number ending digit limit of 4
 * 26/6/23 - updated to fix 'fast fill' working and gave preview of data, removed 'today' menu option
 * 24/6/23 - updated from Pxxx-x... to PROxxx-x... & similar for WIP.

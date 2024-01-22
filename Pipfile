@@ -12,6 +12,7 @@ pyinstaller = "*"
 openpyxl = "*"
 numpy = "*"
 pandas = "*"
+pyperclip = "*"
 
 [requires]
 python_version = "3"

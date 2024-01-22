@@ -131,12 +131,8 @@ class TimeSheetLoader():
         """This is the master function to run to get a day's timesheet entry."""
         timesheet_data = self.summary_data(date)
         self.display_data()
-        if len(timesheet_data['data']) != 0:    # only prompt if data to enter
-            user_input = input("Load in Excel (enter) yes, (n) no? ")
-            if user_input == '':
-                self.excelLoad()
-            if user_input == 'n':
-                pass
+        if len(timesheet_data['data']) != 0:    # only proceed if there is data to continue with
+            self.excelLoad()
         return timesheet_data
         
 
@@ -308,13 +304,14 @@ class TimeSheetLoader():
 
 
     def excelLoad(self):
-        """Load the timesheet in a new Excel window."""
-        self.times_updated = self.merge_cross_ref()
+        """Copy the timesheet data rows to the clipboard, excluding the header."""
         try:
-            self.times_updated.to_excel("temp_output.xlsx", index=False)  # save to Excel
-            os.startfile("temp_output.xlsx")  # open file
-        except PermissionError:
-            print('ERROR Please close file and try again.')
+            self.times_updated = self.merge_cross_ref()
+            # Copy data to clipboard without the header
+            self.times_updated.to_clipboard(index=False, header=False, excel=True)
+            print('Data rows copied to clipboard. You can now paste them into your online Excel workbook.')
+        except Exception as e:
+            print(f'ERROR: Unable to copy data to clipboard. {e}')
 
 
     def display_data(self):
