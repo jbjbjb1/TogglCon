@@ -17,6 +17,9 @@ class MissingProjectException(Exception):
     """Exception raised for missing project."""
     pass
 
+class WrongProjectNameFormatException(Exception):
+    """Exception raised for wrong project name format."""
+    pass
 class TimeSheetLoader():
     """ The class to handle completing timesheets daily. """
 
@@ -172,9 +175,7 @@ class TimeSheetLoader():
                     short_job = short_string.split('/')[1].strip()
                     r_dat2['data'].append({'project': i['project'], 'project_short': short_project, 'W': short_job, 'charge_type': ''})
                 except IndexError:
-                    print(f"ERROR There is an issue with how you have entered \"{i['project']}\". Try again...", end = '')
-                    input()
-                    break                       
+                    raise WrongProjectNameFormatException(f"The project name \"{i['project']}\" has not followed the correct formatting. Please fix and try again.")               
 
         # Add formatted data
         b_times = []
