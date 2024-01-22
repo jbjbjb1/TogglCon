@@ -9,6 +9,13 @@ import requests
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, NamedStyle
 
+class MissingChargeTypeException(Exception):
+    """Exception raised for missing charge type tag."""
+    pass
+
+class MissingProjectException(Exception):
+    """Exception raised for missing project."""
+    pass
 
 class TimeSheetLoader():
     """ The class to handle completing timesheets daily. """
@@ -155,9 +162,7 @@ class TimeSheetLoader():
         # Create base dataframe with above for timesheet
         for i in projects_list:
             if i['project'] == None:
-                print('\n! Error: missing project for item in Toggl. Press any button to reset program.')
-                input()
-                break
+                raise MissingProjectException(f"One of your entries is missing a project. Please fix and try again.")
             elif i['project'] == 'NR':
                 r_dat2['data'].append({'project': i['project'], 'project_short': '', 'W': '', 'charge_type': 'NR'}) 
             else:
@@ -183,8 +188,11 @@ class TimeSheetLoader():
                         x['client'] = i['client']
                     # Add charge type tag
                     # TODO this is not correct place as project may have multiple tags that need to be split out
-                    if x['charge_type'] == '':
-                        x['charge_type'] = i['tags'][0]
+                    try:
+                        if x['charge_type'] == '':
+                            x['charge_type'] = i['tags'][0]
+                    except IndexError:
+                        raise MissingChargeTypeException(f"Missing charge type tag for {i['description']}. Please fix and try again.")
 
 
             # Add the times (milliseconds) to each of the unique projects.

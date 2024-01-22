@@ -8,6 +8,17 @@ from time import sleep
 version = '3.4'
 print(f'---> togglcon, version {version} <---')
 
+def get_and_handle_timesheet(date):
+    try:
+        timesheet_data = a.get_timesheet(date)
+        return timesheet_data
+    except t_time.MissingChargeTypeException as e:
+        print(e)  # Print the custom error message
+        return None
+    except t_time.MissingProjectException as e:
+        print(e)  # Print the custom error message for missing project
+        return None 
+
 # Initiate class for timesheets
 a = t_time.TimeSheetLoader()
 
@@ -18,13 +29,13 @@ while True:
     if choice == '':
         # Get today's timesheet and open it in Excel
         date = datetime.strftime(datetime.now(), '%d/%m/%y')
-        timesheet_data = a.get_timesheet(date)
-        input('\nPress any key to exit...')
-        exit()
+        if get_and_handle_timesheet(date) is not None:  #Run the program, if no errors allow the program to close.
+            input('\nPress any key to exit...')
+            exit()
     elif choice == 'y':
         # Get yesterday's timesheet
         date = datetime.strftime(datetime.now() - timedelta(1), '%d/%m/%y')
-        timesheet_data = a.get_timesheet(date)
+        timesheet_data = get_and_handle_timesheet(date)
     elif choice =='h':
         # See help
         print('App version:', version)
@@ -35,4 +46,4 @@ while True:
     else:
         # Assume user has entered date in format DD/MM/YY
         date = choice
-        timesheet_data = a.get_timesheet(date)
+        timesheet_data = get_and_handle_timesheet(date)

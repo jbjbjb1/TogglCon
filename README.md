@@ -43,16 +43,11 @@ Note: a current limitation is that there can only be one tag for a project/job c
 
 # Improvements needed
 The following are in order of priority:
-* Map branch and charge type as required
 * Charge type tags from Toggl not fully functional, needs to split into multiple rows if different charge types
-* Get autocomplete feature working
-* Get tags working for charge type (quoting/chargeable)
-* If there is an error, don't crash, leave error on screen
 * Error logs not writing
-* Seems to be a bug if start a time entry with 'time'
-* Add functionality to sum up hours against documents on certain projects
 
 # Improvements completed
+* 22/1/24 - if there is an error, don't crash, leave error on screen. Added icon file.
 * 29/9/23 - removed project/job number ending digit limit of 4
 * 26/6/23 - updated to fix 'fast fill' working and gave preview of data, removed 'today' menu option
 * 24/6/23 - updated from Pxxx-x... to PROxxx-x... & similar for WIP.
