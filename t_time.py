@@ -20,6 +20,11 @@ class MissingProjectException(Exception):
 class WrongProjectNameFormatException(Exception):
     """Exception raised for wrong project name format."""
     pass
+
+class NoDayDataException(Exception):
+    """Exception raised for no data on day selected."""
+    pass
+
 class TimeSheetLoader():
     """ The class to handle completing timesheets daily. """
 
@@ -140,6 +145,9 @@ class TimeSheetLoader():
         """Get's detailed data and summarises to required format for timesheet."""
         # Get detailed timesheet
         r_dat = self.get_detailed_data(date)
+        # If r_dat is empty (i.e. no entries) let user know and stop process
+        if r_dat['data'] == []:
+            raise NoDayDataException(f"There is no timesheet data entererd for this day.")
         # Create a new variable for summarised data
         r_dat2 = {'data': [ ] }
         # Save the date in the new vaiable
@@ -254,7 +262,7 @@ class TimeSheetLoader():
         
         # Save as Pandas dataframe
         self.times = self.create_df(r_dat2)
-        
+            
         return r_dat2
 
 
