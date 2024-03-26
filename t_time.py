@@ -157,9 +157,14 @@ class TimeSheetLoader():
         projects_list = []
         try:
             for i in r_dat['data']:
-                if {'project': i['project']} not in projects_list:
-                    # assign a new entry to the dictionary of project
-                    projects_list.append({'project': i['project']})
+                # Consider both project and tag for uniqueness
+                project_tag_combination = f"{i['project']}_{i.get('tags')[0] if i.get('tags') else 'NoTag'}"
+                if not any(project_tag_combination in d['project_tag'] for d in projects_list):
+                    projects_list.append({
+                        'project_tag': project_tag_combination, 
+                        'project': i['project'], 
+                        'tag': i.get('tags')[0] if i.get('tags') else 'NoTag'
+                    })
         except KeyError:
             # Include error checking if API key is wrong
             try:
@@ -167,11 +172,12 @@ class TimeSheetLoader():
             except KeyError:
                 raise
         # Create base dataframe with above for timesheet
+        # TODO check that the below is splitting out 2 tags in the same project as 2 rows
         for i in projects_list:
             if i['project'] == None:
                 raise MissingProjectException(f"One of your entries is missing a project. Please fix and try again.")
             elif i['project'] == 'NR':
-                r_dat2['data'].append({'project': i['project'], 'project_short': '', 'W': '', 'charge_type': 'NR'}) 
+                r_dat2['data'].append({'project': i['project'], 'tag': i['tag'], 'project_short': '', 'W': '', 'charge_type': 'NR'}) 
             else:
                 try:
                     short_string = i['project'].split()[0]     # project_short splits string  

@@ -47,6 +47,7 @@ The following are in order of priority:
 * Error logs not writing
 
 # Improvements completed
+* 26/3/24 - (v3.8) group entries of same project by their tag if multiple (previously grouped only as main tag)
 * 23/3/24 - (v3.7) error handling if no data was in timesheet
 * 22/1/24 - (v3.6) changed method to send data straight to clipboard
 * 22/1/24 - (v3.5) error handling created for common errors and added icon file.
