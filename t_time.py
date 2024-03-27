@@ -153,18 +153,18 @@ class TimeSheetLoader():
         # Save the date in the new vaiable
         r_dat2['date'] = date
 
-        # Get a list of the unique projects as list of dictionaries
+        # Get a list of the unique project/tag combinations as list of dictionaries
         projects_list = []
         try:
             for i in r_dat['data']:
                 # Consider both project and tag for uniqueness
-                project_tag_combination = f"{i['project']}_{i.get('tags')[0] if i.get('tags') else 'NoTag'}"
-                if not any(project_tag_combination in d['project_tag'] for d in projects_list):
-                    projects_list.append({
-                        'project_tag': project_tag_combination, 
-                        'project': i['project'], 
-                        'tag': i.get('tags')[0] if i.get('tags') else 'NoTag'
-                    })
+                try:
+                    project_tag_combination = [{'project': i['project'], 'tag': i['tags'][0]}]
+                    if project_tag_combination not in projects_list:
+                        # assign a new entry to the dictionary of project
+                        projects_list.append(project_tag_combination)
+                except IndexError:
+                    raise MissingChargeTypeException(f"Missing charge type tag for {i['description']}. Please fix and try again.")
         except KeyError:
             # Include error checking if API key is wrong
             try:
@@ -172,18 +172,18 @@ class TimeSheetLoader():
             except KeyError:
                 raise
         # Create base dataframe with above for timesheet
-        # TODO check that the below is splitting out 2 tags in the same project as 2 rows
-        for i in projects_list:
-            if i['project'] == None:
+        for entry in projects_list:
+            entry = entry[0]
+            if entry['project'] == None:
                 raise MissingProjectException(f"One of your entries is missing a project. Please fix and try again.")
-            elif i['project'] == 'NR':
-                r_dat2['data'].append({'project': i['project'], 'tag': i['tag'], 'project_short': '', 'W': '', 'charge_type': 'NR'}) 
+            elif entry['project'] == 'NR':
+                r_dat2['data'].append({'project': entry['project'], 'project_short': '', 'W': '', 'charge_type': entry['tag']}) 
             else:
                 try:
-                    short_string = i['project'].split()[0]     # project_short splits string  
+                    short_string = entry['project'].split()[0]     # project_short splits string  
                     short_project = short_string.split('/')[0].strip()
                     short_job = short_string.split('/')[1].strip()
-                    r_dat2['data'].append({'project': i['project'], 'project_short': short_project, 'W': short_job, 'charge_type': ''})
+                    r_dat2['data'].append({'project': entry['project'], 'project_short': short_project, 'W': short_job, 'charge_type': entry['tag']})
                 except IndexError:
                     raise WrongProjectNameFormatException(f"The project name \"{i['project']}\" has not followed the correct formatting. Please fix and try again.")               
 
@@ -191,25 +191,16 @@ class TimeSheetLoader():
         b_times = []
         for x in r_dat2['data']:
             x['client'] = ''
-            x['charge_type'] = ''
             for i in r_dat['data']:
                 if x['project'] == i['project']:
                     # Add client
                     if i['client'] != x['client']:
                         x['client'] = i['client']
-                    # Add charge type tag
-                    # TODO this is not correct place as project may have multiple tags that need to be split out
-                    try:
-                        if x['charge_type'] == '':
-                            x['charge_type'] = i['tags'][0]
-                    except IndexError:
-                        raise MissingChargeTypeException(f"Missing charge type tag for {i['description']}. Please fix and try again.")
-
 
             # Add the times (milliseconds) to each of the unique projects.
             a_times = 0
             for i in r_dat['data']:
-                if x['project'] == i['project']:
+                if x['project'] == i['project'] and x['charge_type'] == i['tags'][0]:
                     a_times += i['dur']
             b_times.append(a_times)
             x['time'] = a_times
@@ -218,7 +209,7 @@ class TimeSheetLoader():
             x['temp_desc'] = []
             x['temp_desc_time'] = []
             for i in r_dat['data']:
-                if x['project'] == i['project']:
+                if x['project'] == i['project'] and x['charge_type'] == i['tags'][0]:
                     if i['description'] not in x['temp_desc']:
                         x['temp_desc'].append(i['description'])
                         x['temp_desc_time'].append(i['dur'])
@@ -240,7 +231,7 @@ class TimeSheetLoader():
                         x['description'].append(x['temp_desc'][idx] + ' (' + str(self.round_half_hr(x['temp_desc_time'][idx])) + 'hr)')
 
             # Get output description string
-            if x['project'] == 'NR':
+            if x['project'] == 'NR' and x['charge_type'] == i['tags'][0]:
                 description = ', '.join(x['description'])
             else:
                 description = '(' + x['client'] + ') ' + ', '.join(x['description'])
