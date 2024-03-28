@@ -16,37 +16,29 @@ The output from Togglcon is to:
 
 Errors that will be advised are:
 * If the format 'Pxxxxxxx/Wxxxxxxx - Project title/Job title' in Toggl is not followed
-* If trying to load the Excel file and it is already open
 * If you don't have a cross_ref.xlsx to merge with (will still display data as-is in Excel)
-
-Note: a current limitation is that there can only be one tag for a project/job combination on each day's timesheet.
 
 # How to run and use it
 1. Sign up for Toggl.com
 2. Installation process
         a) Install Python 3.9 installed on your computer.
-        b) Install Visual Studio Code, go to the folder of the code, View -> Command Pallet and choose Python
-        c) `pip install pipenv`
+        b) In terminal run `pip install pipenv`
         d) There is an exisiting Pipfile for a pipenv. Use that pipenv to run the program with `pipenv install`.
-        e) From now on you only need to enter `pipenv shell` to enter the shell or use VS Code environments
-        f) If the debug is not picking up the pipenv, follow this: https://stackoverflow.com/questions/72115439/python-pipenv-not-display-in-the-python-interpreter
-        g) You should now be able to run TogglCon by putting into terminal `python togglcon.py`
-3. (Optional) Batch file for program shortcut
-        a) Install Anaconda
-        b) Open `_togglcon.bat` and update as instructed. This file can then be a shortcut on the desktop. 
-        c) Remove the comment at the top of the bat file after following the instructions
+        e) If the debug is not picking up the pipenv, follow this: https://stackoverflow.com/questions/72115439/python-pipenv-not-display-in-the-python-interpreter
+3. Batch file for program shortcut
+        a) Double click on togglcon.bat to run the program. You can right click on it and send a shortcut to the desktop and put togglcon.ico as the icon.
 3. Settings
         When you start the app it will prompt you and automatically create settings.txt. There is a sample `_settings.txt` file to view. The user agent is the user's email so that Toggl can contact them if there are any issues with the API requests.
-4. Auto type into Excel
-        When the app prompts you, it will give you a few seconds to click in the Office Online Excel sheet before the autotyping starts.
+4. Paste into Excel
+        The app will auto copy the data to your clipboard. You can then paste it in Excel online or in the desktop app.
 
 
 # Improvements needed
 The following are in order of priority:
-* Charge type tags from Toggl not fully functional, needs to split into multiple rows if different charge types
-* Error logs not writing
+* None
 
 # Improvements completed
+* 28/3/24 - (v3.9) updated togglcon.bat to work. Right click and send shortcut to desktop.
 * 26/3/24 - (v3.8) group entries of same project by their tag if multiple (previously grouped only as main tag)
 * 23/3/24 - (v3.7) error handling if no data was in timesheet
 * 22/1/24 - (v3.6) changed method to send data straight to clipboard
