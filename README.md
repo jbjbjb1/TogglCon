@@ -38,7 +38,7 @@ The following are in order of priority:
 * None
 
 # Improvements completed
-* 28/3/24 - (v3.9) updated togglcon.bat to work. Removed setting not used.
+* 28/3/24 - (v3.9) Updated togglcon.bat to work. Removed setting not used. Fixed total time not rounding correctly.
 * 26/3/24 - (v3.8) group entries of same project by their tag if multiple (previously grouped only as main tag)
 * 23/3/24 - (v3.7) error handling if no data was in timesheet
 * 22/1/24 - (v3.6) changed method to send data straight to clipboard
