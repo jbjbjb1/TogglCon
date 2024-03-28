@@ -47,7 +47,6 @@ class TimeSheetLoader():
             self.api_key = input('Your API key (get it in Toggl Profile Settings https://toggl.com/app/profile ): ')
             print('    Your workspace IDs are:' , ', '.join(self.get_workspace_id()))
             self.workspace_id = input('Enter the 7 digit workspace ID to use: ')
-            self.excel_path = input('Path to excel file for your timesheet: ')
         # Save the user settings to settings.txt
             with open('settings.txt', 'w') as f:
                 f.write('user_agent = ' + str(self.user_agent) + '\n')
@@ -97,39 +96,6 @@ class TimeSheetLoader():
 
     def format_date_date(self, date):
         return datetime.strptime(date, '%d/%m/%y').date()
-
-
-    def hours_function(self, r_dat):
-        """Check there are no projects rounded to 0 hrs."""
-        # Add the hours lost/gained by rounding to the one most rounded
-        hrs_total = 0
-        hrs_diff = []
-        for i in r_dat['data']:
-            hrs_total += self.round_half_hr(i['time'])
-            hrs_diff.append( i['time']/(60*60*1000) - self.round_half_hr(i['time']) )
-        
-        # Don't change any hours (previously was aiming for 7.5 hrs)
-        hrs_to_change = 0
-        
-        # Find the time entry that was most rounded
-        max_index = hrs_diff.index(max(hrs_diff))
-        
-        # Add new entries for data with rounded time and time added to most rounded time.
-        for idx, i in enumerate(r_dat['data']):
-            if idx == max_index and hrs_to_change != 0:
-                i['time_rounded'] = self.round_half_hr(i['time']) + hrs_to_change
-                print(i['project'],'has', hrs_to_change,'hours added due to rounding.')
-                continue
-            elif idx == max_index and hrs_to_change == 0:
-                i['time_rounded'] = self.round_half_hr(i['time'])
-                print(f'{hrs_total} hrs total.')
-                continue
-            i['time_rounded'] = self.round_half_hr(i['time'])
-
-        # If project time entry is 0.0hrs, remove from list
-        for idx, i in enumerate(r_dat['data']):
-            if i['time_rounded'] == 0:
-                del r_dat['data'][idx]
 
 
     def get_timesheet(self, date):
@@ -197,13 +163,12 @@ class TimeSheetLoader():
                     if i['client'] != x['client']:
                         x['client'] = i['client']
 
-            # Add the times (milliseconds) to each of the unique projects.
-            a_times = 0
-            for i in r_dat['data']:
-                if x['project'] == i['project'] and x['charge_type'] == i['tags'][0]:
-                    a_times += i['dur']
-            b_times.append(a_times)
-            x['time'] = a_times
+            # Aggregate time (ms) by project_tag_combination
+            project_tag_times = {}
+            for entry in r_dat['data']:
+                tag = entry['tags'][0] if entry.get('tags') else 'NoTag'
+                key = (entry['project'], tag)
+                project_tag_times[key] = project_tag_times.get(key, 0) + entry['dur']            
 
             # Add comments with time if more than one comment. Store descriptions to 'temp_desc' and time to 'temp_desc_time'.
             x['temp_desc'] = []
@@ -248,26 +213,59 @@ class TimeSheetLoader():
             if x['project'] != 'NR':
                 x['project_short'] = 'PRO' + x['project_short'][1:4] + '-' + x['project_short'][4:]
                 x['W'] = 'WIP' + x['W'][1:4] + '-' + x['W'][4:]
-            
-            pass
-                               
-        # Format the hours as required and save to new variable (if there are any entries)
-        if len(r_dat2['data']) != 0:
-            self.hours_function(r_dat2)  # proceed if entries
-        else:
+
+        # Now doing times
+        # First, calculate the sum of actual unrounded hours
+        actual_total_hours_unrounded = sum(time_ms for time_ms in project_tag_times.values()) / (1000 * 60 * 60)
+        
+        # Then, round this sum to the nearest half-hour if necessary
+        actual_total_hours_nearest = round(actual_total_hours_unrounded * 2) / 2
+
+        # Round each project_tag_combination total time to the nearest half-hour
+        project_tag_times_rounded = project_tag_times.copy()
+        for key, time_ms in project_tag_times_rounded.items():
+            hours = time_ms / (1000 * 60 * 60)  # Convert ms to hours
+            project_tag_times_rounded[key] = round(hours * 2) / 2  # Round to nearest half-hour
+       
+        actual_total_hours_rounded = sum(project_tag_times_rounded.values())
+
+        # Assuming the discrepancy must be resolved in half-hour increments
+        if actual_total_hours_rounded != actual_total_hours_nearest:
+            discrepancy = actual_total_hours_rounded - actual_total_hours_nearest
+            adjustments_needed = int(discrepancy * 2)  # Convert to how many half-hours need adjusting
+
+            # Sort entries by rounded time descending, so we start adjustment from the largest
+            sorted_keys = sorted(project_tag_times_rounded, key=project_tag_times_rounded.get, reverse=True)
+            for key in sorted_keys:
+                if adjustments_needed == 0:
+                    break  # Stop if no more adjustments are needed
+                # Ensure we don't reduce below 0.5 hours to maintain minimum billing increments
+                if project_tag_times_rounded[key] >= 0.5:
+                    project_tag_times_rounded[key] -= 0.5  # Reduce by half-hour
+                    adjustments_needed -= 1  # Decrement the needed adjustments
+
+        # Update rdat2 with times
+        for entry in r_dat2['data']:
+            # Create a key based on the project and charge_type
+            project = entry['project']
+            charge_type = entry['charge_type']
+            key = (project, charge_type)
+
+            # Find the corresponding rounded time and insert it into the entry
+            if key in project_tag_times_rounded:
+                entry['time_rounded'] = project_tag_times_rounded[key]
+            else:
+                entry['time_rounded'] = 0  # or handle as appropriate if the key is not found
+        print(f'{actual_total_hours_nearest} hrs total.')
+        
+        # Advise user if no timesheet entries
+        if len(r_dat2['data']) == 0:
             print('No timesheet entries.')
         
         # Save as Pandas dataframe
         self.times = self.create_df(r_dat2)
             
         return r_dat2
-
-
-    def autocomplete(self):
-        """Autocompletes Excel file by controlling the keyboard to enter text."""
-
-        print('\nThis feature is not yet operational.')
-        #TODO add this feature
 
     
     def create_df(self, r_dat2):
@@ -314,7 +312,7 @@ class TimeSheetLoader():
             self.times_updated = self.merge_cross_ref()
             # Copy data to clipboard without the header
             self.times_updated.to_clipboard(index=False, header=False, excel=True)
-            print('Data rows copied to clipboard. You can now paste them into your online Excel workbook.')
+            print('Data rows copied to clipboard. You can now paste them into your Excel workbook.')
         except Exception as e:
             print(f'ERROR: Unable to copy data to clipboard. {e}')
 
