@@ -20,22 +20,11 @@ Errors that will be advised are:
 
 # How to run and use it
 1. Sign up for Toggl.com
-2. Installation process
-        a) Install Python 3.9 installed on your computer.
-        b) In terminal run `pip install pipenv`
-        d) There is an exisiting Pipfile for a pipenv. Use that pipenv to run the program with `pipenv install`.
-        e) If the debug is not picking up the pipenv, follow this: https://stackoverflow.com/questions/72115439/python-pipenv-not-display-in-the-python-interpreter
-3. Batch file for program shortcut
-        a) Double click on togglcon.bat to run the program. You can right click on it and send a shortcut to the desktop and put togglcon.ico as the icon.
-3. Settings
-        When you start the app it will prompt you and automatically create settings.txt. There is a sample `_settings.txt` file to view. The user agent is the user's email so that Toggl can contact them if there are any issues with the API requests.
-4. Paste into Excel
-        The app will auto copy the data to your clipboard. You can then paste it in Excel online or in the desktop app.
-
+2. Use the web app (in development)
 
 # Improvements needed
-The following are in order of priority:
-* None
+* Need to change to be serverless suitable
+* Need to read in cross reference information from settings.txt rather than .xlsx
 
 # Improvements completed
 * 28/3/24 - (v3.9) Updated togglcon.bat to work. Removed setting not used. Fixed total time not rounding correctly.
