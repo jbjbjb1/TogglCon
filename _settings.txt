@@ -1,6 +1,0 @@
-! Example file only. When you run the program it will prompt you to make this file.
-
-user_agent = test@test.com
-api_key = 12345
-workspace_id = 12345
-website = https://github.com/
