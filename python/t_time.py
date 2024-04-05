@@ -6,8 +6,7 @@ import numpy as np
 import pandas as pd
 
 import requests
-from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Alignment, NamedStyle
+
 
 class MissingChargeTypeException(Exception):
     """Exception raised for missing charge type tag."""
