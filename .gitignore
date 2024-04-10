@@ -1,5 +1,5 @@
-python/~.
-python/.vscode/
-python/__pycache__/
-python/settings.txt
-python/cross_ref.xlsx
+~.
+.vscode/
+__pycache__/
+settings.txt
+cross_ref.xlsx
