@@ -27,6 +27,7 @@ def lambda_handler(event, context):
     date_str = event['date']
     email = event['email']
     
+    
 # format extracted values to how they will need to be presented
     emailname = email.split('@')[0]
     # Assuming date_str is your date in "YYYY-MM-DD" format
@@ -34,6 +35,7 @@ def lambda_handler(event, context):
     # Now format this date object into "DD/MM/YY"
     date = formatted_date = date_object.strftime('%d/%m/%y')
     
+
 # write name and time to the DynamoDB table using the object we instantiated and save response in a variable
     response = table.put_item(
         Item={
@@ -43,19 +45,48 @@ def lambda_handler(event, context):
             'date': date,
             })
 
+
 # return a properly formatted JSON object
     return {
         "statusCode": 200,
         "headers": {
             "Content-Type": "application/json"
         },
-        'body': json.dumps({
-            "Date": {"0": f"{date}", "1": f"{date}"},
-            "Branch": {"0": f"{emailname}", "1": f"{emailname}"},
-            "Charge Type": {"0": "TYPE 1", "1": "TYPE 1"},
-            "Project No": {"0": f"{togglapikey}", "1": f"{togglapikey}"},
-            "Job No": {"0": "", "1": ""},
-            "Description": {"0": "(Client) Planning", "1": "First aid training (3.5hr)"},
-            "Hours": {"0": "3.5", "1": "3.5"}
-        })
+        'body': json.dumps({"Data": [
+            {
+                "Date": f"{date}",
+                "Branch": f"{emailname}",
+                "Charge Type": "ABCABCAB-AB",
+                "Project No": f"{togglapikey}",
+                "Job No": "ABC0001111",
+                "Description": "(Client) Planning",
+                "Hours": "3.5"
+            },
+            {
+                "Date": "05/04/24",
+                "Branch": "Branch 1",
+                "Charge Type": "TYPE 1",
+                "Project No": "PROJ 2",
+                "Job No": "",
+                "Description": "First aid training (3.5hr)",
+                "Hours": "3.5"
+            }
+            ]
+            })
     }
+
+
+"""
+# Notes for how to export from Pandas in below data structure
+
+# Converting DataFrame to JSON in the 'records' orientation & convert JSON string to a Python list of dictionaries
+data_list = json.loads(df.to_json(orient='records'))
+
+# Wrap this list into a dictionary under the key 'Data'
+wrapped_data = {"Data": data_list}
+
+# Convert the entire structure back to a JSON string
+json_output = json.dumps(wrapped_data)
+
+
+"""
