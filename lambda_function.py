@@ -7,14 +7,15 @@ import time
 from datetime import datetime
 # import two packages to help us with dates and date formatting
 
-# create a DynamoDB object using the AWS SDK
-dynamodb = boto3.resource('dynamodb')
-# use the DynamoDB object to select our table
-table = dynamodb.Table('TogglCon.log')
-
 # define the handler function that the Lambda service will use as an entry point
 def lambda_handler(event, context):
- # Get the current GMT time
+    
+    # create a DynamoDB object using the AWS SDK
+    dynamodb = boto3.resource('dynamodb')
+    # use the DynamoDB object to select our table
+    table = dynamodb.Table('TogglCon.log')
+    
+    # Get the current GMT time
     gmt_time = time.gmtime()
 
     # store the current time in a human readable format in a variable
@@ -22,13 +23,14 @@ def lambda_handler(event, context):
     now = time.strftime('%a, %d %b %Y %H:%M:%S +0000', gmt_time)
 
 
-# extract values from the event object we got from the Lambda service and store in a variable
+    # extract values from the event object we got from the Lambda service and store in a variable
     togglapikey = event['togglapikey']
     date_str = event['date']
     email = event['email']
+    workspace_ID = event['workspace_ID']
     
     
-# format extracted values to how they will need to be presented
+    # format extracted values to how they will need to be presented
     emailname = email.split('@')[0]
     # Assuming date_str is your date in "YYYY-MM-DD" format
     date_object = datetime.strptime(date_str, '%Y-%m-%d')
@@ -36,7 +38,7 @@ def lambda_handler(event, context):
     date = formatted_date = date_object.strftime('%d/%m/%y')
     
 
-# write name and time to the DynamoDB table using the object we instantiated and save response in a variable
+    # write name and time to the DynamoDB table using the object we instantiated and save response in a variable
     response = table.put_item(
         Item={
             'ID-timestamp': now + "_" + email,
@@ -46,7 +48,7 @@ def lambda_handler(event, context):
             })
 
 
-# return a properly formatted JSON object
+    # return a properly formatted JSON object
     return {
         "statusCode": 200,
         "headers": {
@@ -67,26 +69,10 @@ def lambda_handler(event, context):
                 "Branch": "Branch 1",
                 "Charge Type": "TYPE 1",
                 "Project No": "PROJ 2",
-                "Job No": "",
+                "Job No": f"{workspace_ID}",
                 "Description": "First aid training (3.5hr)",
                 "Hours": "3.5"
             }
             ]
             })
     }
-
-
-"""
-# Notes for how to export from Pandas in below data structure
-
-# Converting DataFrame to JSON in the 'records' orientation & convert JSON string to a Python list of dictionaries
-data_list = json.loads(df.to_json(orient='records'))
-
-# Wrap this list into a dictionary under the key 'Data'
-wrapped_data = {"Data": data_list}
-
-# Convert the entire structure back to a JSON string
-json_output = json.dumps(wrapped_data)
-
-
-"""
