@@ -1,6 +1,5 @@
 import json
 import logging
-import os.path
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
@@ -27,30 +26,14 @@ class NoDayDataException(Exception):
 class TimeSheetLoader():
     """ The class to handle completing timesheets daily. """
 
-    def __init__(self):
+    def __init__(self, user_agent, api_key, workspace_id, date):
         # Declare initial user vairables
-        self.user_agent, self.api_key, self.workspace_id, self.website = ('', '', '', '')
-        # Load user details from settings file
-        try:
-            with open('settings.txt') as f:
-                for line in f:
-                    fields = line.strip().split()
-                    # for security only input these pre-defined variables
-                    if fields[0] == 'user_agent' or 'api_key' or 'workspace_id' or 'website':
-                        # Handling the path on the computer needs special help
-                        exec('self.%s = "%s"' % (fields[0], fields[2]))
-        # If it doesn't exist, prompt the user for the settings
-        except FileNotFoundError:
-            print('Let\'s get you setup!')
-            self.user_agent = input('Your email address: ')
-            self.api_key = input('Your API key (get it in Toggl Profile Settings https://toggl.com/app/profile ): ')
-            print('    Your workspace IDs are:' , ', '.join(self.get_workspace_id()))
-            self.workspace_id = input('Enter the 7 digit workspace ID to use: ')
-        # Save the user settings to settings.txt
-            with open('settings.txt', 'w') as f:
-                f.write('user_agent = ' + str(self.user_agent) + '\n')
-                f.write('api_key = ' + str(self.api_key) +  '\n')
-                f.write('workspace_id = ' + str(self.workspace_id) +  '\n')
+        self.user_agent = user_agent
+        self.api_key = api_key
+        # Have workspace ID
+        ## Later need to allow people to find this out: print('    Your workspace IDs are:' , ', '.join(self.get_workspace_id()))
+        self.workspace_id = workspace_id
+        self.date = date
 
 
     def get_workspace_id(self):
@@ -76,7 +59,6 @@ class TimeSheetLoader():
         'tag_ids': '',
         }
         # Get data from api
-        print('Loading...', end = '')
         r = requests.get('https://api.track.toggl.com/reports/api/v2/details', auth=(self.api_key, 'api_token'), params=parameters)
         
         return r.json()  
@@ -97,26 +79,23 @@ class TimeSheetLoader():
         return datetime.strptime(date, '%d/%m/%y').date()
 
 
-    def get_timesheet(self, date):
+    def get_timesheet(self):
         """This is the master function to run to get a day's timesheet entry."""
-        timesheet_data = self.summary_data(date)
-        self.display_data()
-        if len(timesheet_data['data']) != 0:    # only proceed if there is data to continue with
-            self.excelLoad()
+        timesheet_data = self.summary_data(self.date)
         return timesheet_data
         
 
-    def summary_data(self, date):
+    def summary_data(self):
         """Get's detailed data and summarises to required format for timesheet."""
         # Get detailed timesheet
-        r_dat = self.get_detailed_data(date)
+        r_dat = self.get_detailed_data(self.date)
         # If r_dat is empty (i.e. no entries) let user know and stop process
         if r_dat['data'] == []:
             raise NoDayDataException(f"There is no timesheet data entererd for this day.")
         # Create a new variable for summarised data
         r_dat2 = {'data': [ ] }
         # Save the date in the new vaiable
-        r_dat2['date'] = date
+        r_dat2['date'] = self.date
 
         # Get a list of the unique project/tag combinations as list of dictionaries
         projects_list = []
@@ -255,18 +234,13 @@ class TimeSheetLoader():
                 entry['time_rounded'] = project_tag_times_rounded[key]
             else:
                 entry['time_rounded'] = 0  # or handle as appropriate if the key is not found
-        print(f'{actual_total_hours_nearest} hrs total.')
-        
-        # Advise user if no timesheet entries
-        if len(r_dat2['data']) == 0:
-            print('No timesheet entries.')
-        
+                
         # Save as Pandas dataframe
         self.times = self.create_df(r_dat2)
             
         return r_dat2
 
-    
+
     def create_df(self, r_dat2):
         """Create Pandas dataframe with data."""
         data = []
@@ -281,43 +255,3 @@ class TimeSheetLoader():
         dataframe = pd.DataFrame(data)
         dataframe['Branch'] = pd.to_numeric(dataframe['Branch'])
         return dataframe
-
-
-    def merge_cross_ref(self):
-        """Merge cross_ref.xlsx into the datframe."""
-        try:
-            # Load merge data
-            merge_data_branch = pd.read_excel('cross_ref.xlsx', 'Branch', header=None, names=['Branch', 'Full'])
-            merge_data_charge = pd.read_excel('cross_ref.xlsx', 'ChargeType', header=None, names=['Charge Type', 'Full'])
-            # Merge branch code
-            times_branch = self.times.merge(merge_data_branch, how='left', on='Branch')
-            times_branch.drop(columns=['Branch'], inplace=True)
-            times_branch.rename(columns={"Full": "Branch"}, inplace=True)
-            # Merge charge code
-            times_charge = times_branch.merge(merge_data_charge, how='left', on='Charge Type')
-            times_charge.drop(columns=['Charge Type'], inplace=True)
-            times_charge.rename(columns={"Full": "Charge Type"}, inplace=True)
-            # Then re-order
-            times_updated = times_charge[['Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours']]
-        except FileExistsError:
-            print('File cross_ref.xlsx does not exist.')
-
-        return times_updated
-
-
-    def excelLoad(self):
-        """Copy the timesheet data rows to the clipboard, excluding the header."""
-        try:
-            self.times_updated = self.merge_cross_ref()
-            # Copy data to clipboard without the header
-            self.times_updated.to_clipboard(index=False, header=False, excel=True)
-            print('Data rows copied to clipboard. You can now paste them into your Excel workbook.')
-        except Exception as e:
-            print(f'ERROR: Unable to copy data to clipboard. {e}')
-
-
-    def display_data(self):
-        # Show from Pandas dataframe
-        print('')
-        print(self.times.to_string(index=False))
-        print('')
