@@ -231,7 +231,8 @@ class TimeSheetLoader():
 
         # Assuming the discrepancy must be resolved in half-hour increments
         if actual_total_hours_rounded != actual_total_hours_nearest:
-            discrepancy = actual_total_hours_rounded - actual_total_hours_nearest
+            discrepancy = actual_total_hours_nearest - actual_total_hours_rounded
+            discrepancy_sign = discrepancy / abs(discrepancy)
             adjustments_needed = int(discrepancy * 2)  # Convert to how many half-hours need adjusting
 
             # Sort entries by rounded time descending, so we start adjustment from the largest
@@ -241,8 +242,8 @@ class TimeSheetLoader():
                     break  # Stop if no more adjustments are needed
                 # Ensure we don't reduce below 0.5 hours to maintain minimum billing increments
                 if project_tag_times_rounded[key] >= 0.5:
-                    project_tag_times_rounded[key] -= 0.5  # Reduce by half-hour
-                    adjustments_needed -= 1  # Decrement the needed adjustments
+                    project_tag_times_rounded[key] += 0.5 * discrepancy_sign  # Increase or reduce the time based on the value of discrepancy
+                    adjustments_needed -= 1 # Decrement the needed adjustments
 
         # Update rdat2 with times
         for entry in r_dat2['data']:
@@ -284,32 +285,12 @@ class TimeSheetLoader():
         return dataframe
 
 
-    def merge_cross_ref(self):
-        """Merge cross_ref.xlsx into the datframe."""
-        try:
-            # Load merge data
-            merge_data_branch = pd.read_excel('cross_ref.xlsx', 'Branch', header=None, names=['Branch', 'Full'])
-            merge_data_charge = pd.read_excel('cross_ref.xlsx', 'ChargeType', header=None, names=['Charge Type', 'Full'])
-            # Merge branch code
-            times_branch = self.times.merge(merge_data_branch, how='left', on='Branch')
-            times_branch.drop(columns=['Branch'], inplace=True)
-            times_branch.rename(columns={"Full": "Branch"}, inplace=True)
-            # Merge charge code
-            times_charge = times_branch.merge(merge_data_charge, how='left', on='Charge Type')
-            times_charge.drop(columns=['Charge Type'], inplace=True)
-            times_charge.rename(columns={"Full": "Charge Type"}, inplace=True)
-            # Then re-order
-            times_updated = times_charge[['Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours']]
-        except FileExistsError:
-            print('File cross_ref.xlsx does not exist.')
-
-        return times_updated
-
-
     def excelLoad(self):
         """Copy the timesheet data rows to the clipboard, excluding the header."""
         try:
-            self.times_updated = self.merge_cross_ref()
+            # Then re-order
+            self.times_updated = self.times[['Date', 'Branch', 'Charge Type', 'Project No', 'Job No', 'Description', 'Hours']]
+            
             # Copy data to clipboard without the header
             self.times_updated.to_clipboard(index=False, header=False, excel=True)
             print('Data rows copied to clipboard. You can now paste them into your Excel workbook.')
