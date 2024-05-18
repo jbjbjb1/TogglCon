@@ -56,7 +56,7 @@ class TimeSheetLoader():
 
     def get_workspace_id(self):
         # Gets list of workspaces user has from api
-        r = requests.get('https://api.track.toggl.com/api/v8/workspaces', auth=(self.api_key, 'api_token'))
+        r = requests.get('https://api.track.toggl.com/api/v9/workspaces', auth=(self.api_key, 'api_token'))
         r = r.json()
         ids = []
         for entry in r:
