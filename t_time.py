@@ -264,6 +264,10 @@ class TimeSheetLoader():
                 entry['time_rounded'] = project_tag_times_rounded[key]
             else:
                 entry['time_rounded'] = 0  # or handle as appropriate if the key is not found
+        
+        # Filter out entries with time_rounded == 0
+        r_dat2['data'] = [entry for entry in r_dat2['data'] if entry['time_rounded'] > 0]
+
         print(f'{actual_total_hours_nearest} hrs total.')
         
         # Advise user if no timesheet entries
