@@ -5,7 +5,7 @@ from time import sleep
 
 
 # Version and welcome message
-version = '3.10.1'
+version = '3.10.2'
 print(f'---> togglcon, version {version} <---')
 
 def get_and_handle_timesheet(date):
@@ -16,13 +16,16 @@ def get_and_handle_timesheet(date):
         print(e)  # Print the custom error message
         return None
     except t_time.MissingProjectException as e:
-        print(e)  # Print the custom error message for missing project
+        print(e)  # Print the custom error message
         return None
     except t_time.WrongProjectNameFormatException as e:
-        print(e)  # Print the custom error message for missing project
+        print(e)  # Print the custom error message
         return None
     except t_time.NoDayDataException as e:
-        print(e)  # Print the custom error message for missing project
+        print(e)  # Print the custom error message
+        return None
+    except t_time.DateOutOfRangeException as e:
+        print(e)  # Print the custom error message
         return None 
 
 # Initiate class for timesheets

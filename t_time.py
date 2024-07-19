@@ -25,6 +25,10 @@ class NoDayDataException(Exception):
     """Exception raised for no data on day selected."""
     pass
 
+class DateOutOfRangeException(Exception):
+    """Exception raised for no data on day selected."""
+    pass
+
 class TimeSheetLoader():
     """ The class to handle completing timesheets daily. """
 
@@ -67,7 +71,10 @@ class TimeSheetLoader():
     def get_detailed_data(self, date):
         """Get detailed data for a specific date from toggl api"""
         # Format date required by Toggl api
-        date = datetime.strptime(date, '%d/%m/%y').strftime('%Y-%m-%d')
+        try:
+            date = datetime.strptime(date, '%d/%m/%y').strftime('%Y-%m-%d')
+        except ValueError:
+            raise DateOutOfRangeException(f"This date does not exist. Please check and try again.")
         # Set paramaters for api call
         parameters = {
         'user_agent': self.user_agent,
