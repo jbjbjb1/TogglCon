@@ -3,20 +3,20 @@ This app takes timesheet information from Toggl.com, restructures it based on th
 
 The method that information needs to be put into Toggl.com is:
 * A client must be defined for each project,
-* Each project shall be in the format: 'Pxxxxxxx/Wxxxxxxx - Project title/Job title'
+* Each project shall be in the format (where 'x' is number and 'a' is letter): 
+- 'P-xaa-xxx-xxxxx/Jaa-xxx-xxxxx - Project title/Job title', or
+- 'Pxxxxxxx/W[7 or 8 x] - Project title/Job title'
 * Tags of your choise must be used against each time entry
 * If you want to cross reference the tags to a longer string (only for Branch, ChargeType), then you need to fill out cross_ref.xlsx like the sample shown
 
 The output from Togglcon is to:
-* Split out the "(WIPxxx-xxxx)" number from each line entry so it is shown in its own column
+* For numbers Pxxxxxxx/W[7 or 8 x], they will be converted to Paaxxx-xxxx/Waaxxx-[4 or 5 x]
 * All times in the output presentation view will be rounded to the nearest 0.5 hr.
 * In the description field, add the client name in brackets at the start, e.g. "(Client) Description"
 * In the description field, if there are multiple entries for the same project/WIPxxx-xxxx, it will group them and the second entry onwards will have the duration in brackets, e.g. "(Client) Description, Description1 (1.0hr), Description2 (0.5hr)"
 * If you want to cross reference the tags to a longer string (only for Branch, ChargeType) before opening in Excel
 
-Errors that will be advised are:
-* If the format 'Pxxxxxxx/Wxxxxxxx - Project title/Job title' in Toggl is not followed
-* If you don't have a cross_ref.xlsx to merge with (will still display data as-is in Excel)
+Errors will be advised for common issues such as non-existant dates, Project title/Job title format not correct etc.
 
 # How to run and use it
 1. Sign up for Toggl.com
@@ -38,6 +38,7 @@ The following are in order of priority:
 * None
 
 # Improvements completed
+* 18/5/24 - (v3.11.0) Added functionality for different project and job number format. Fixed issue of zero hour time in timesheets.
 * 18/5/24 - (v3.10.1) Updated from Toggl api v8 to v9
 * 25/4/24 - (v3.10) Fixed rounding issue. Removed some unnessesary code.
 * 28/3/24 - (v3.9) Updated togglcon.bat to work. Removed setting not used. Fixed total time not rounding correctly.
