@@ -166,7 +166,7 @@ class TimeSheetLoader():
                     raise WrongProjectNameFormatException(f"The project name \"{entry['project']}\" has not followed the correct formatting. Please fix and try again.")
 
                 # Validate project and job number formats
-                if not (re.match(r'[A-Z]-\d[A-Z]{3}-\d{3}-\d{5}', project_no) or re.match(r'[A-Z]{3}\d{3}-\d{4,5}', project_no)):
+                if not (re.match(r'[A-Z]-\d[A-Z]{3}-\d{3}', project_no) or re.match(r'[A-Z]{3}\d{3}', project_no)):
                     raise WrongProjectNameFormatException(f"The project name \"{project_no}\" has not followed the correct formatting. Please fix and try again.")
                 if not (re.match(r'[A-Z]{3}-\d{3}', job_no) or re.match(r'[A-Z]{3}\d{3}', job_no)):
                     raise WrongProjectNameFormatException(f"The job number \"{job_no}\" in Toggl should be a) [J][2xletter]-[3xdigit], or b) W[3xdigit]")
