@@ -5,8 +5,8 @@ import os.path
 from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
-
 import requests
+import textwrap
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, NamedStyle
 
@@ -251,7 +251,6 @@ class TimeSheetLoader():
             # Sort entries by rounded time descending, so we start adjustment from the largest
             sorted_keys = sorted(project_tag_times_rounded, key=project_tag_times_rounded.get, reverse=True)
             for key in sorted_keys:
-                print(key)
                 if adjustments_needed == 0:
                     break  # Stop if no more adjustments are needed
                 # Ensure we don't reduce below 0 hours to maintain minimum billing increments
