@@ -5,7 +5,7 @@ from time import sleep
 
 
 # Version and welcome message
-version = '3.11.1'
+version = '3.11.2'
 print(f'---> togglcon, version {version} <---')
 
 def get_and_handle_timesheet(date):
