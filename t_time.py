@@ -251,12 +251,13 @@ class TimeSheetLoader():
             # Sort entries by rounded time descending, so we start adjustment from the largest
             sorted_keys = sorted(project_tag_times_rounded, key=project_tag_times_rounded.get, reverse=True)
             for key in sorted_keys:
+                print(key)
                 if adjustments_needed == 0:
                     break  # Stop if no more adjustments are needed
-                # Ensure we don't reduce below 0.5 hours to maintain minimum billing increments
+                # Ensure we don't reduce below 0 hours to maintain minimum billing increments
                 if project_tag_times_rounded[key] >= 0.5:
                     project_tag_times_rounded[key] += 0.5 * discrepancy_sign  # Increase or reduce the time based on the value of discrepancy
-                    adjustments_needed -= 1  # Decrement the needed adjustments
+                    adjustments_needed -= 1 * discrepancy_sign  # Decrement the needed adjustments the correct way
 
         # Update r_dat2 with times
         for entry in r_dat2['data']:
@@ -298,6 +299,8 @@ class TimeSheetLoader():
                 'Description': i['output_desc'], 
                 'Hours': str(i['time_rounded'])})
         dataframe = pd.DataFrame(data)
+        # Sort the DataFrame by 'Project No'
+        dataframe = dataframe.sort_values(by='Project No', ascending=False)
         return dataframe
 
 

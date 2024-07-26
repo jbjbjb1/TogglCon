@@ -39,19 +39,7 @@ The following are in order of priority:
 * None
 
 # Improvements completed
-* 18/5/24 - (v3.11.0) Added functionality for different project and job number format. Fixed issue of zero hour time in timesheets.
-* 18/5/24 - (v3.10.1) Updated from Toggl api v8 to v9
-* 25/4/24 - (v3.10) Fixed rounding issue. Removed some unnessesary code.
-* 28/3/24 - (v3.9) Updated togglcon.bat to work. Removed setting not used. Fixed total time not rounding correctly.
-* 26/3/24 - (v3.8) group entries of same project by their tag if multiple (previously grouped only as main tag)
-* 23/3/24 - (v3.7) error handling if no data was in timesheet
-* 22/1/24 - (v3.6) changed method to send data straight to clipboard
-* 22/1/24 - (v3.5) error handling created for common errors and added icon file.
-* 29/9/23 - removed project/job number ending digit limit of 4
-* 26/6/23 - updated to fix 'fast fill' working and gave preview of data, removed 'today' menu option
-* 24/6/23 - updated from Pxxx-x... to PROxxx-x... & similar for WIP.
-* 24/6/23 - fixed issue of cross_ref.xlsx file always not importing first row
-* 13/7/22 - tracking was missing off the auto created settings file causing the program to crash
+See here for improvements made: 
 
 # Interested to contribute?
 See the API references here and contribure https://github.com/toggl/toggl_api_docs !
