@@ -34,12 +34,8 @@ Errors will be advised for common issues such as non-existant dates, Project tit
         The app will auto copy the data to your clipboard. You can then paste it in Excel online or in the desktop app.
 
 
-# Improvements needed
-The following are in order of priority:
-* None
-
 # Improvements completed
 See here for improvements made: https://github.com/jbjbjb1/TogglCon/releases/
 
 # Interested to contribute?
-See the API references here and contribure https://github.com/toggl/toggl_api_docs !
+Create an improvement or fix needed in https://github.com/jbjbjb1/TogglCon/issues and start work!
