@@ -8,6 +8,23 @@ from time import sleep
 version = '3.11.2'
 print(f'---> togglcon, version {version} <---')
 
+def lambda_handler(event, context):
+    date = event.get('date', datetime.strftime(datetime.now(), '%d/%m/%y'))
+    a = t_time.TimeSheetLoader()
+    result = get_and_handle_timesheet(date, a)
+
+    # If an error was returned
+    if isinstance(result, dict) and 'error' in result:
+        return {
+            'statusCode': 400,
+            'body': result['error']
+        }
+
+    return {
+        'statusCode': 200,
+        'body': result
+    }
+
 def get_and_handle_timesheet(date):
     try:
         timesheet_data = a.get_timesheet(date)
