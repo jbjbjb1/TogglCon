@@ -3,14 +3,14 @@ import os
 from datetime import datetime, timedelta
 from time import sleep
 
-if 
-    # import the AWS SDK (for Python the package name is boto3)
+# import the AWS SDK if in AWS environment
+if 'AWS_EXECUTION_ENV' in os.environ:
     import boto3
-
 
 # Version and welcome message
 version = '4.0.0'
 print(f'---> togglcon, version {version} <---')
+
 
 def lambda_handler(event, context):
     
@@ -21,24 +21,22 @@ def lambda_handler(event, context):
     workspace_ID = event['workspace_ID']
 
     # run the logic to get the timesheet data
-    instance = logic.TimeLogic(togglapikey, email, workspace_ID)
-    instance.summary_data(date_str)
-    df = instance.times # get timesheet data
-    result = df.to_json(orient='records') #convert for sending as JSON
+    timesheet = logic.TimeLogic(togglapikey, email, workspace_ID)
+    timesheet.summary_data(date_str)
+    result = timesheet.times # timesheet data result
 
-    # If an error was returned
-    if isinstance(result, dict) and 'error' in result:
+    if result['status'] == 'error':
         return {
             'statusCode': 400,
-            'body': result['error']
+            'body': result['error']     #return error
+        }
+    else:
+        return {
+            'statusCode': 200,
+            'body': result['data'].to_json(orient='records')    # convert df to json
         }
 
-    return {
-        'statusCode': 200,
-        'body': result
-    }
-
-    # save details to database
+    # Code to save details to database
 
     # create a DynamoDB object using the AWS SDK
     dynamodb = boto3.resource('dynamodb')
@@ -61,37 +59,30 @@ def lambda_handler(event, context):
             'date': date,
             })
 
+
 def run_local(date):
+    """ If running locally, load local package and gather settings to use for api calls. """
+
+    local_instance = local.TimeLocal()  # get settings.txt loaded or setup
+
+    # get timesheet data for date
+    timesheet = logic.TimeLogic(local_instance.api_key, local_instance.user_agent, local_instance.workspace_id) 
+    print('Loading...', end = '') # let user know loading
+    result = timesheet.summary_data(date) # timesheet run
+    local_instance.times = timesheet.times # pass variable to local_instance
     
-    
+    if result['status'] == 'error': # show error if one
+        print(result['error']) 
+    elif timesheet.notimesheetentries == True: # advise if no timesheets
+        print('No timesheet entries.')
+    else:
+        print(f'{timesheet.actual_total_hours_nearest} hrs total.')
+        local_instance.display_data()    # print timesheet to terminal
+        local_instance.excelLoad()   # copy to excel
 
-    try:
-        local_instance = local.TimeLocal()  # get settings.txt loaded/setup
-
-        instance = logic.TimeLogic()
-        instance.summary_data(date)
-        df = instance.times # get timesheet data
-
-        pass
-
-    except t_time.MissingChargeTypeException as e:
-        print(e)  # Print the custom error message
-        return None
-    except t_time.MissingProjectException as e:
-        print(e)  # Print the custom error message
-        return None
-    except t_time.WrongProjectNameFormatException as e:
-        print(e)  # Print the custom error message
-        return None
-    except t_time.NoDayDataException as e:
-        print(e)  # Print the custom error message
-        return None
-    except t_time.DateOutOfRangeException as e:
-        print(e)  # Print the custom error message
-        return None 
 
 def main():
-    # Terminal line interation with user to control program
+    # Terminal line interation with local user to control program
     choice = ''
     while True:   
         choice = input('\nView today (enter), yesterday (y), specific (DD/MM/YY), help (h) or exit (e): ')    

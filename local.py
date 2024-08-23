@@ -14,8 +14,10 @@ class TimeLocal():
     """ The class to handle local machine tasks for timesheet app. """
 
     def __init__(self):
+        
         # Declare initial user vairables
-        self.user_agent, self.api_key, self.workspace_id, self.website = ('', '', '', '')
+        self.user_agent, self.api_key, self.workspace_id, self.website, self.times = ('', '', '', '', None)
+        
         # Load user details from settings file
         try:
             with open('settings.txt') as f:
@@ -25,6 +27,7 @@ class TimeLocal():
                     if fields[0] == 'user_agent' or 'api_key' or 'workspace_id' or 'website':
                         # Handling the path on the computer needs special help
                         exec('self.%s = "%s"' % (fields[0], fields[2]))
+        
         # If it doesn't exist, prompt the user for the settings
         except FileNotFoundError:
             print('Let\'s get you setup!')
@@ -32,6 +35,7 @@ class TimeLocal():
             self.api_key = input('Your API key (get it in Toggl Profile Settings https://toggl.com/app/profile ): ')
             print('    Your workspace IDs are:' , ', '.join(self.get_workspace_id()))
             self.workspace_id = input('Enter the 7 digit workspace ID to use: ')
+        
         # Save the user settings to settings.txt
             with open('settings.txt', 'w') as f:
                 f.write('user_agent = ' + str(self.user_agent) + '\n')
@@ -71,9 +75,6 @@ class TimeLocal():
 
     def display_data(self):
         # Show from Pandas dataframe
-        actual_total_hours_nearest = 'xyz'
-        print(f'{actual_total_hours_nearest} hrs total.')
-
         print('')
         print(self.times.to_string(index=False))
         print('')
