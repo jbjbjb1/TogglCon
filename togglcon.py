@@ -73,3 +73,7 @@ while True:
         # Assume user has entered date in format DD/MM/YY
         date = choice
         timesheet_data = get_and_handle_timesheet(date)
+
+
+if __name__ == "__main__":
+    main()
