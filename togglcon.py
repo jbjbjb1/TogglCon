@@ -2,6 +2,8 @@ import logic, local
 import os
 from datetime import datetime, timedelta
 from time import sleep
+import time
+import json
 
 # import the AWS SDK if in AWS environment
 if 'AWS_EXECUTION_ENV' in os.environ:
@@ -22,9 +24,10 @@ def lambda_handler(event, context):
 
     # run the logic to get the timesheet data
     timesheet = logic.TimeLogic(togglapikey, email, workspace_ID)
-    timesheet.summary_data(date_str)
-    result = timesheet.times # timesheet data result
+    result = timesheet.summary_data(date_str) # advises if succeeded, if it does passes dataframe
+    data = {"Data": result['data'].to_json(orient='records')}
 
+    # return to web app the json format to display
     if result['status'] == 'error':
         return {
             'statusCode': 400,
@@ -33,7 +36,10 @@ def lambda_handler(event, context):
     else:
         return {
             'statusCode': 200,
-            'body': result['data'].to_json(orient='records')    # convert df to json
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+            'body': data
         }
 
     # Code to save details to database
