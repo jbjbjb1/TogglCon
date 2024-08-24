@@ -33,6 +33,13 @@ Errors will be advised for common issues such as non-existant dates, Project tit
 4. Paste into Excel
         The app will auto copy the data to your clipboard. You can then paste it in Excel online or in the desktop app.
 
+# Preparing for AWS
+1. pipenv lock -r > requirements.txt, remove unneded packages
+2. pip install -r requirements.txt -t ./package
+3. cp togglcon.py logic.py local.py package/
+4. cd package
+5. zip -r9 ../deployment-package.zip .
+
 
 # Improvements completed
 See here for improvements made: https://github.com/jbjbjb1/TogglCon/releases/
