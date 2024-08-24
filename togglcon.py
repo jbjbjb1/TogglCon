@@ -22,6 +22,10 @@ def lambda_handler(event, context):
     email = event['email']
     workspace_ID = event['workspace_ID']
 
+    # Convert the date format from YYYY-MM-DD to DD/MM/YY
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    date_str = date_obj.strftime('%d/%m/%y')
+
     # run the logic to get the timesheet data
     timesheet = logic.TimeLogic(togglapikey, email, workspace_ID)
     result = timesheet.summary_data(date_str) # advises if succeeded, if it does passes dataframe

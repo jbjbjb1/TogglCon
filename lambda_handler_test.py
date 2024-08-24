@@ -20,7 +20,7 @@ def test_lambda_handler():
     # Mock event and context
     event = {
         'togglapikey': togglapikey,
-        'date': '21/08/24',  # Example date
+        'date': '2024-08-21',  # This is the date fromat from API
         'email': email,
         'workspace_ID': workspace_ID
     }
