@@ -29,7 +29,7 @@ def lambda_handler(event, context):
     # run the logic to get the timesheet data
     timesheet = logic.TimeLogic(togglapikey, email, workspace_ID)
     result = timesheet.summary_data(date_str) # advises if succeeded, if it does passes dataframe
-    data = {"Data": result['data'].to_json(orient='records')}
+    data = {"Data": json.loads(result['data'].to_json(orient='records'))}
 
     # return to web app the json format to display
     if result['status'] == 'error':
