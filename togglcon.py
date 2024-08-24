@@ -43,7 +43,7 @@ def lambda_handler(event, context):
             'headers': {
                 'Content-Type': 'application/json'
             },
-            'body': data
+            'body': json.dumps(data)    # make it a string
         }
 
     # Code to save details to database
