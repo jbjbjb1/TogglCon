@@ -7,7 +7,7 @@ The method that information needs to be put into Toggl.com is:
 - 'P-xaa-xxx-xxxxx/Jaa-xxx-xxxxx - Project title/Job title', or
 - 'Pxxxxxxx/W[7 or 8 x] - Project title/Job title'
 * The last 4 or 5 digits can be left off if needed
-* Tags of your choise must be used against each time entry
+* Tags that get read in are: LABOUR-ENG, LEAVE, NR-ADMIN, NR-ENGQUOT. Any other tags are not considered in Togglcon.
 * If you want to cross reference the tags to a longer string (only for Branch, ChargeType), then you need to fill out cross_ref.xlsx like the sample shown
 
 The output from Togglcon is to:

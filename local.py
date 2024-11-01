@@ -75,6 +75,12 @@ class TimeLocal():
 
     def display_data(self):
         # Show from Pandas dataframe
+        # Make a copy of the DataFrame limited to a certain number of characters
+        times_copy = self.times.copy()
+
+        # Limit the "Description" column to no more than 30 characters and add "..." if it was cut off
+        times_copy["Description"] = times_copy["Description"].apply(lambda x: (x[:57] + "...") if isinstance(x, str) and len(x) > 60 else x)
+
         print('')
-        print(self.times.to_string(index=False))
+        print(times_copy.to_string(index=False))
         print('')
