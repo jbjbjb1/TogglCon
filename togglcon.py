@@ -10,7 +10,7 @@ if 'AWS_EXECUTION_ENV' in os.environ:
     import boto3
 
 # Version and welcome message
-version = '4.0.0'
+version = '4.0.1'
 print(f'---> togglcon, version {version} <---')
 
 

@@ -25,7 +25,11 @@ class NoDayDataException(Exception):
     pass
 
 class DateOutOfRangeException(Exception):
-    """Exception raised for no data on day selected."""
+    """Exception raised for date in the future."""
+    pass
+
+class DuplicateValidTagException(Exception):
+    """Exception raised for duplicate valid tags."""
     pass
 
 class TimeLogic():
@@ -91,22 +95,37 @@ class TimeLogic():
 
             # Get a list of the unique project/tag combinations as a list of dictionaries
             projects_list = []
+            valid_tags = ["LABOUR-ENG", "LEAVE", "NR-ADMIN", "NR-ENGQUOT"]
+
             try:
                 for i in r_dat['data']:
                     # Consider both project and tag for uniqueness
-                    try:
-                        project_tag_combination = [{'project': i['project'], 'tag': i['tags'][0]}]
-                        if project_tag_combination not in projects_list:
-                            # Assign a new entry to the dictionary of project
-                            projects_list.append(project_tag_combination)
-                    except IndexError:
-                        raise MissingChargeTypeException(f"Missing charge type tag for {i['description']}. Please fix and try again.")
+                    valid_tag = None
+                    matching_tags = [tag for tag in i['tags'] if tag in valid_tags]
+                    
+                    # If more than one valid tag matches, raise an exception
+                    if len(matching_tags) > 1:
+                        raise DuplicateValidTagException(f"Multiple valid tags for entry \"{i['description']}\". Please fix and try again.")
+                    
+                    # If exactly one valid tag matches, assign it
+                    elif len(matching_tags) == 1:
+                        valid_tag = matching_tags[0]
+                    
+                    # If no valid tags match, skip this entry (or handle as needed)
+                    else:
+                        raise MissingChargeTypeException(f"Missing charge type tag for entry \"{i['description']}\". Please fix and try again.")
+
+                    # Create the project/tag combination dictionary and add it to the list if unique
+                    project_tag_combination = {'project': i['project'], 'tag': valid_tag}
+                    if project_tag_combination not in projects_list:
+                        projects_list.append(project_tag_combination)
+                        
             except KeyError:
                 raise KeyError
             
             # Create base dataframe with above for timesheet
             for entry in projects_list:
-                entry = entry[0]
+                #entry = entry[0]
                 if entry['project'] is None:
                     raise MissingProjectException(f"One of your entries is missing a project. Please fix and try again.")
                 elif entry['project'] == 'NR':
@@ -244,7 +263,7 @@ class TimeLogic():
             self.times = self.create_df(r_dat2)
             return {"status": "success", "data": self.times}
         
-        except (MissingChargeTypeException, MissingProjectException, WrongProjectNameFormatException, NoDayDataException, DateOutOfRangeException) as e:
+        except (DuplicateValidTagException, MissingChargeTypeException, MissingProjectException, WrongProjectNameFormatException, NoDayDataException, DateOutOfRangeException) as e:
             return {"status": "error", "error": str(e)}
 
         except Exception as e:
